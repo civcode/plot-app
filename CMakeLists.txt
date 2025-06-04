@@ -45,7 +45,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nanovg)
 
 include_directories(
-    include
+    ${CMAKE_SOURCE_DIR}/include
     ${glad_SOURCE_DIR}/include
     ${imgui_SOURCE_DIR}
     ${implot_SOURCE_DIR}
@@ -53,7 +53,7 @@ include_directories(
 )
 
 file(GLOB SRC_FILES
-    src/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/*.cpp
     ${imgui_SOURCE_DIR}/*.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp

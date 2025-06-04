@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <implot.h>
 #include "nanovg.h"
+#include "nvg_wrapper.hpp"
 
 struct NVGcontext;
 

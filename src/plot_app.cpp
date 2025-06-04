@@ -1,4 +1,4 @@
-#include "PlotApp.hpp"
+#include "plot_app/plot_app.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

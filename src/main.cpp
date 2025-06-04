@@ -1,4 +1,4 @@
-#include "PlotApp.hpp"
+#include "plot_app/plot_app.hpp"
 
 #include <math.h>
 #include <imgui.h>
@@ -57,10 +57,15 @@ int main() {
         x += g_speed;
         if (x > 300.0f) x = 0.0f;
 
-        nvgBeginPath(vg);
-        nvgCircle(vg, x, 100, 40);
-        nvgFillColor(vg, nvgRGBA(255, 100, 0, 255));
-        nvgFill(vg);
+        nvg::SetContext(vg);
+        nvg::BeginPath();
+        nvg::Circle(x, 100, 40);
+        nvg::FillColor(nvgRGBA(255, 100, 0, 255));
+        nvg::Fill();
+        // nvgBeginPath(vg);
+        // nvgCircle(vg, x, 100, 40);
+        // nvgFillColor(vg, nvgRGBA(255, 100, 0, 255));
+        // nvgFill(vg);
     });
 
 
@@ -73,28 +78,31 @@ int main() {
     });
     
     PlotApp::AddPaintWindow("NanoVG Canvas 3", [](NVGcontext* vg) {
-        // nvgBeginPath(vg);
-        // for (int i = 0; i < 2; ++i) {
-        //     float angle = i * 2.0f * M_PI / 100.0f;
-        //     float x = 40 + cosf(angle) * 100;
-        //     float y = 30 + sinf(angle) * 100;
-        //     nvgCircle(vg, x, y, 10);
-        // }
-        // nvgStrokeColor(vg, nvgRGBA(255, 255, 255, 255));
-        // nvgStroke(vg);
-        // // nvgFillColor(vg, nvgRGBA(0, 255, 0, 255));
-        // // nvgFill(vg);
 
+        nvg::SetContext(vg);
         static int cnt;
         for (int i = 0; i < 10; ++i) {
             float angle = (i+(cnt++)/100.0f) * 2.0f * M_PI / 100.0f;
             float x = 100 + cosf(angle) * 100;
             float y = 100 + sinf(angle) * 100;
 
-            nvgBeginPath(vg);
-            nvgCircle(vg, x, y, 3);
-            nvgFillColor(vg, nvgRGBA(0, 255, 0, 255));
-            nvgFill(vg);
+            nvg::BeginPath();
+            nvg::SetShapeAntiAlias(false);
+            nvg::Circle(x, y, 3);
+            nvg::StrokeColor(nvg::RGBA(255, 0, 0, 255));
+            nvgStrokeWidth(vg, 0.5);
+            nvg::Stroke();
+            // nvg::FillColor(nvgRGBA(0, 255, 0, 255));
+            // nvg::Fill();
+            nvg::ClosePath();
+
+            nvg::BeginPath();
+            nvg::SetShapeAntiAlias(false);
+            nvg::MoveTo(200, 200);
+            nvg::LineTo(x, y);
+            nvg::StrokeColor(nvg::RGBA(0, 255, 0, 255));
+            nvg::Stroke();
+            nvg::ClosePath();
         }
     });
         
