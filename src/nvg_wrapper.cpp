@@ -1,4 +1,4 @@
-#include "plot_app/nvg_wrapper.hpp"
+#include "render_module/nvg_wrapper.hpp"
 
 namespace nvg {
 

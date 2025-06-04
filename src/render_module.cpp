@@ -1,4 +1,4 @@
-#include "plot_app/plot_app.hpp"
+#include "render_module/render_module.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -45,11 +45,11 @@ static void CreateFBO(PaintWindow& win, int width, int height) {
     win.height = height;
 }
 
-void PlotApp::Init(int width, int height) {
+void RenderModule::Init(int width, int height, const char* title) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    ctx.window = glfwCreateWindow(width, height, "PlotApp", nullptr, nullptr);
+    ctx.window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     glfwMakeContextCurrent(ctx.window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
@@ -63,15 +63,15 @@ void PlotApp::Init(int width, int height) {
     ctx.vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 }
 
-void PlotApp::SetImGuiCallback(std::function<void()> callback) {
+void RenderModule::SetImGuiCallback(std::function<void()> callback) {
     ctx.imguiCallback = callback;
 }
 
-void PlotApp::AddPaintWindow(const std::string& name, std::function<void(NVGcontext*)> callback) {
+void RenderModule::AddPaintWindow(const std::string& name, std::function<void(NVGcontext*)> callback) {
     ctx.paintWindows.push_back(PaintWindow{name, callback});
 }
 
-void PlotApp::Run() {
+void RenderModule::Run() {
     while (!glfwWindowShouldClose(ctx.window)) {
         glfwPollEvents();
         int display_w, display_h;
@@ -120,7 +120,7 @@ void PlotApp::Run() {
     }
 }
 
-void PlotApp::Shutdown() {
+void RenderModule::Shutdown() {
     for (auto& win : ctx.paintWindows) {
         if (win.texture) glDeleteTextures(1, &win.texture);
         if (win.fbo) glDeleteFramebuffers(1, &win.fbo);

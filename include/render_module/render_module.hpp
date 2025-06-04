@@ -12,9 +12,9 @@
 
 struct NVGcontext;
 
-class PlotApp {
+class RenderModule {
 public:
-    static void Init(int width, int height);
+    static void Init(int width, int height, const char* title = "RenderModule");
     static void SetImGuiCallback(std::function<void()> callback);
     static void AddPaintWindow(const std::string& name, std::function<void(NVGcontext*)> callback);
     static void Run();

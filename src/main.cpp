@@ -1,4 +1,4 @@
-#include "plot_app/plot_app.hpp"
+#include "render_module/render_module.hpp"
 
 #include <math.h>
 #include <imgui.h>
@@ -28,10 +28,10 @@ struct PaintState {
 };
 
 int main() {
-    PlotApp::Init(1280, 720);
+    RenderModule::Init(1280, 720);
 
     // Combined ImGui callback that creates multiple windows
-    PlotApp::SetImGuiCallback([]() {
+    RenderModule::SetImGuiCallback([]() {
         // First window: Sine plot
         ImGui::Begin("Sine Plot");
         if (ImPlot::BeginPlot("Sine Wave")) {
@@ -52,7 +52,7 @@ int main() {
     });
 
     // Paint window: animated NanoVG circle
-    PlotApp::AddPaintWindow("NanoVG Canvas", [](NVGcontext* vg) {
+    RenderModule::AddPaintWindow("NanoVG Canvas", [](NVGcontext* vg) {
         static float x = 0.0f;
         x += g_speed;
         if (x > 300.0f) x = 0.0f;
@@ -73,13 +73,14 @@ int main() {
     static PaintState paint;
 
         // Register the paint window using state
-    PlotApp::AddPaintWindow("NanoVG Canvas 2", [](NVGcontext* vg) {
+    RenderModule::AddPaintWindow("NanoVG Canvas 2", [](NVGcontext* vg) {
         paint.draw(vg);
     });
     
-    PlotApp::AddPaintWindow("NanoVG Canvas 3", [](NVGcontext* vg) {
+    RenderModule::AddPaintWindow("NanoVG Canvas 3", [](NVGcontext* vg) {
 
         nvg::SetContext(vg);
+        // nvg::Scale(1.5, 1.5);
         static int cnt;
         for (int i = 0; i < 10; ++i) {
             float angle = (i+(cnt++)/100.0f) * 2.0f * M_PI / 100.0f;
@@ -87,7 +88,7 @@ int main() {
             float y = 100 + sinf(angle) * 100;
 
             nvg::BeginPath();
-            nvg::SetShapeAntiAlias(false);
+            nvg::SetShapeAntiAlias(true);
             nvg::Circle(x, y, 3);
             nvg::StrokeColor(nvg::RGBA(255, 0, 0, 255));
             nvgStrokeWidth(vg, 0.5);
@@ -97,7 +98,7 @@ int main() {
             nvg::ClosePath();
 
             nvg::BeginPath();
-            nvg::SetShapeAntiAlias(false);
+            // nvg::SetShapeAntiAlias(false);
             nvg::MoveTo(200, 200);
             nvg::LineTo(x, y);
             nvg::StrokeColor(nvg::RGBA(0, 255, 0, 255));
@@ -107,7 +108,7 @@ int main() {
     });
         
 
-    PlotApp::Run();
-    PlotApp::Shutdown();
+    RenderModule::Run();
+    RenderModule::Shutdown();
     return 0;
 }

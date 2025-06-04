@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(PlotAppDemo)
+project(RenderModuleDemo)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -61,11 +61,11 @@ file(GLOB SRC_FILES
     ${nanovg_SOURCE_DIR}/src/nanovg.c
 )
 
-add_executable(PlotAppDemo ${SRC_FILES} src/main.cpp)
+add_executable(RenderModuleDemo ${SRC_FILES} src/main.cpp)
 
-target_link_libraries(PlotAppDemo
+target_link_libraries(RenderModuleDemo
     ${GLFW_LIBRARIES}
     glad
 )
 
-target_compile_definitions(PlotAppDemo PRIVATE NANOVG_GL3_IMPLEMENTATION)
+target_compile_definitions(RenderModuleDemo PRIVATE NANOVG_GL3_IMPLEMENTATION)
