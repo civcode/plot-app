@@ -78,33 +78,35 @@ int main() {
     });
     
     RenderModule::AddPaintWindow("NanoVG Canvas 3", [](NVGcontext* vg) {
+        ZoomView::Draw("Zoomable NanoVG Canvas", vg, [](NVGcontext* vg) {
 
-        nvg::SetContext(vg);
-        // nvg::Scale(1.5, 1.5);
-        static int cnt;
-        for (int i = 0; i < 10; ++i) {
-            float angle = (i+(cnt++)/100.0f) * 2.0f * M_PI / 100.0f;
-            float x = 100 + cosf(angle) * 100;
-            float y = 100 + sinf(angle) * 100;
+            nvg::SetContext(vg);
+            // nvg::Scale(1.5, 1.5);
+            static int cnt;
+            for (int i = 0; i < 10; ++i) {
+                float angle = (i+(cnt++)/100.0f) * 2.0f * M_PI / 100.0f;
+                float x = 100 + cosf(angle) * 100;
+                float y = 100 + sinf(angle) * 100;
 
-            nvg::BeginPath();
-            nvg::SetShapeAntiAlias(true);
-            nvg::Circle(x, y, 3);
-            nvg::StrokeColor(nvg::RGBA(255, 0, 0, 255));
-            nvgStrokeWidth(vg, 0.5);
-            nvg::Stroke();
-            // nvg::FillColor(nvgRGBA(0, 255, 0, 255));
-            // nvg::Fill();
-            nvg::ClosePath();
+                nvg::BeginPath();
+                nvg::SetShapeAntiAlias(true);
+                nvg::Circle(x, y, 3);
+                nvg::StrokeColor(nvg::RGBA(255, 0, 0, 255));
+                nvgStrokeWidth(vg, 0.5);
+                nvg::Stroke();
+                // nvg::FillColor(nvgRGBA(0, 255, 0, 255));
+                // nvg::Fill();
+                nvg::ClosePath();
 
-            nvg::BeginPath();
-            // nvg::SetShapeAntiAlias(false);
-            nvg::MoveTo(200, 200);
-            nvg::LineTo(x, y);
-            nvg::StrokeColor(nvg::RGBA(0, 255, 0, 255));
-            nvg::Stroke();
-            nvg::ClosePath();
-        }
+                nvg::BeginPath();
+                // nvg::SetShapeAntiAlias(false);
+                nvg::MoveTo(200, 200);
+                nvg::LineTo(x, y);
+                nvg::StrokeColor(nvg::RGBA(0, 255, 0, 255));
+                nvg::Stroke();
+                nvg::ClosePath();
+            }
+        });    
     });
         
     RenderModule::AddPaintWindow("Zoomable NanoVG", [](NVGcontext* vg) {

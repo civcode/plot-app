@@ -128,11 +128,12 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
     // Setup for interaction
     ImGui::SetCursorScreenPos(canvasPos);
     ImGui::InvisibleButton(("##ZoomBtn_" + label).c_str(), canvasSize,
-                        ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+        ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 
     ImGui::SetCursorPos(cursorBackup);
 
     bool hovering = ImGui::IsItemHovered();
+    bool active = ImGui::IsItemActive();  
     // bool hovering = ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
     ImVec2 delta = ImGui::GetIO().MouseDelta;
 
@@ -229,7 +230,11 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
         }
     }
 
-
+    if (hovering && active && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+        state.offset.x += delta.x;
+        state.offset.y -= delta.y; // Flip Y for NanoVG
+        printf("Dragging Offset: (%.1f, %.1f)\n", state.offset.x, state.offset.y);
+    }
 
     // ImGui::SetCursorScreenPos(canvasPos);
     // ImGui::Text("Zoom: %.2f", state.zoom);
