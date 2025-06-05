@@ -8,12 +8,6 @@
 
 namespace ZoomView {
 
-/// Draws a zoomable and pannable canvas.
-/// Internally stores zoom and pan state by label.
-///
-/// @param label Unique identifier for the zoom view instance.
-/// @param vg    NanoVG context for rendering.
-/// @param drawCallback A lambda or function that performs NanoVG drawing commands.
 void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontext*)> drawCallback);
 
 } // namespace ZoomView
