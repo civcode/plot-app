@@ -15,6 +15,7 @@ struct PaintWindow {
     std::function<void(NVGcontext*)> callback;
     GLuint fbo = 0;
     GLuint texture = 0;
+    GLuint rbo = 0;
     int width = 0, height = 0;
 };
 
@@ -90,8 +91,10 @@ void RenderModule::Run() {
         for (auto& win : ctx.paintWindows) {
             ImGui::Begin(win.name.c_str());
             ImVec2 size = ImGui::GetContentRegionAvail();
-            int w = static_cast<int>(size.x);
-            int h = static_cast<int>(size.y);
+            // int w = static_cast<int>(size.x);
+            // int h = static_cast<int>(size.y);
+            int w = std::max(16, static_cast<int>(size.x));
+            int h = std::max(16, static_cast<int>(size.y));
 
             if (w != win.width || h != win.height) {
                 CreateFBO(win, w, h);

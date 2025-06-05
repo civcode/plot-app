@@ -9,6 +9,7 @@
 #include <implot.h>
 #include "nanovg.h"
 #include "nvg_wrapper.hpp"
+#include "render_module/zoom_view.hpp"
 
 struct NVGcontext;
 

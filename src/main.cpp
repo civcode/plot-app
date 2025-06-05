@@ -107,6 +107,14 @@ int main() {
         }
     });
         
+    RenderModule::AddPaintWindow("Zoomable NanoVG", [](NVGcontext* vg) {
+        ZoomView::Draw("Zoomable View", vg, [](NVGcontext* vg) {
+            nvgBeginPath(vg);
+            nvgCircle(vg, 100, 100, 40);
+            nvgFillColor(vg, nvgRGB(255, 100, 100));
+            nvgFill(vg);
+        });
+    });
 
     RenderModule::Run();
     RenderModule::Shutdown();
