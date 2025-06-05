@@ -70,13 +70,13 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
     }
 
     // Actual rendering with zoom and pan
-    nvgBeginFrame(vg, canvasSize.x, canvasSize.y, 1.0f);
+    // nvgBeginFrame(vg, canvasSize.x, canvasSize.y, 1.0f);
     nvgSave(vg);
     nvgTranslate(vg, state.offset.x, state.offset.y);
     nvgScale(vg, state.zoom, state.zoom);
     drawCallback(vg);
     nvgRestore(vg);
-    nvgEndFrame(vg);
+    // nvgEndFrame(vg);
 }
 
 } // namespace ZoomView
