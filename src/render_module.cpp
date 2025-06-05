@@ -56,6 +56,14 @@ void RenderModule::Init(int width, int height, const char* title) {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowRounding = 8.0f;
+    style.FrameRounding = 8.0f;
+    style.GrabRounding = 6.0f;
+    style.ScrollbarRounding = 8.0f;
+    ImVec4 bg = ImVec4(0.95f, 0.95f, 0.98f, 1.0f);
+    style.Colors[ImGuiCol_WindowBg] = bg;
+
     ImPlot::CreateContext();
     ImGui::StyleColorsLight();
     ImGui_ImplGlfw_InitForOpenGL(ctx.window, true);

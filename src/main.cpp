@@ -28,7 +28,7 @@ struct PaintState {
 };
 
 int main() {
-    RenderModule::Init(800, 720);
+    RenderModule::Init(980, 720);
 
     // Combined ImGui callback that creates multiple windows
     RenderModule::SetImGuiCallback([]() {
@@ -83,7 +83,7 @@ int main() {
             nvg::SetContext(vg);
             // nvg::Scale(1.5, 1.5);
             static int cnt;
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < 30; ++i) {
                 float angle = (i+(cnt++)/100.0f) * 2.0f * M_PI / 100.0f;
                 float x = 100 + cosf(angle) * 100;
                 float y = 100 + sinf(angle) * 100;
@@ -119,12 +119,10 @@ int main() {
     });
 
     RenderModule::AddPaintWindow("Debug", [](NVGcontext* vg) {
-        // nvgBeginFrame(vg, 200, 200, 1.0f);
         nvgBeginPath(vg);
         nvgRect(vg, 0, 0, 200, 200);
         nvgFillColor(vg, nvgRGB(0, 255, 0));
         nvgFill(vg);
-        // nvgEndFrame(vg);
     });
 
 
