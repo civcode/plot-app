@@ -116,6 +116,16 @@ int main() {
         });
     });
 
+    RenderModule::AddPaintWindow("Debug", [](NVGcontext* vg) {
+        // nvgBeginFrame(vg, 200, 200, 1.0f);
+        nvgBeginPath(vg);
+        nvgRect(vg, 0, 0, 200, 200);
+        nvgFillColor(vg, nvgRGB(0, 255, 0));
+        nvgFill(vg);
+        // nvgEndFrame(vg);
+    });
+
+
     RenderModule::Run();
     RenderModule::Shutdown();
     return 0;

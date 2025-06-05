@@ -16,8 +16,9 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
     ImVec2 canvasPos = ImGui::GetCursorScreenPos();
     ImVec2 canvasSize = ImGui::GetContentRegionAvail();
 
-    ImGui::InvisibleButton(("##" + label).c_str(), canvasSize,
-        ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+    // ImGui::InvisibleButton(("##" + label).c_str(), canvasSize,
+    //     ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+
     bool hovering = ImGui::IsItemHovered();
     ImVec2 mouse = ImGui::GetIO().MousePos;
     ImVec2 delta = ImGui::GetIO().MouseDelta;
@@ -40,13 +41,13 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
     }
 
     // Actual rendering with zoom and pan
-    nvgBeginFrame(vg, canvasSize.x, canvasSize.y, 1.0f);
+    // nvgBeginFrame(vg, canvasSize.x, canvasSize.y, 1.0f);
     nvgSave(vg);
     nvgTranslate(vg, state.offset.x, state.offset.y);
     nvgScale(vg, state.zoom, state.zoom);
     drawCallback(vg);
     nvgRestore(vg);
-    nvgEndFrame(vg);
+    // nvgEndFrame(vg);
 }
 
 } // namespace ZoomView
