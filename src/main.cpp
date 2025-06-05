@@ -28,7 +28,7 @@ struct PaintState {
 };
 
 int main() {
-    RenderModule::Init(1280, 720);
+    RenderModule::Init(800, 720);
 
     // Combined ImGui callback that creates multiple windows
     RenderModule::SetImGuiCallback([]() {
