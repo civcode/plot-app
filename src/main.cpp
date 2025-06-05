@@ -1,9 +1,9 @@
 #include "render_module/render_module.hpp"
 
 #include <math.h>
-#include <imgui.h>
-#include <implot.h>
-#include "nanovg.h"
+// #include <imgui.h>
+// #include <implot.h>
+// #include "nanovg.h"
 
 // shared state
 float g_speed = 1.0f;
@@ -31,7 +31,7 @@ int main() {
     RenderModule::Init(980, 720);
 
     // Combined ImGui callback that creates multiple windows
-    RenderModule::SetImGuiCallback([]() {
+    RenderModule::AddImGuiCallback([]() {
         // First window: Sine plot
         ImGui::Begin("Sine Plot");
         if (ImPlot::BeginPlot("Sine Wave")) {
@@ -47,7 +47,12 @@ int main() {
 
         // Second window: Control panel
         ImGui::Begin("Control Panel");
+        // ImGui::SliderFloat("Speed", &g_speed, 0.1f, 10.0f);
         ImGui::SliderFloat("Speed", &g_speed, 0.1f, 10.0f);
+        if (ImGui::IsItemHovered() && ImGui::GetIO().MouseWheel != 0) {
+            g_speed += ImGui::GetIO().MouseWheel * 0.1f; // Adjust speed and scale as needed
+            g_speed = std::clamp(g_speed, 0.3f, 10.0f);  // Clamp to min/max
+        }
         ImGui::End();
     });
 

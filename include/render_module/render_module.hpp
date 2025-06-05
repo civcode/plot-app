@@ -8,7 +8,7 @@
 #include <imgui.h>
 #include <implot.h>
 #include "nanovg.h"
-#include "nvg_wrapper.hpp"
+#include "render_module/nvg_wrapper.hpp"
 #include "render_module/zoom_view.hpp"
 
 struct NVGcontext;
@@ -16,7 +16,7 @@ struct NVGcontext;
 class RenderModule {
 public:
     static void Init(int width, int height, const char* title = "RenderModule");
-    static void SetImGuiCallback(std::function<void()> callback);
+    static void AddImGuiCallback(std::function<void()> callback);
     static void AddPaintWindow(const std::string& name, std::function<void(NVGcontext*)> callback);
     static void Run();
     static void Shutdown();

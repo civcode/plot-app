@@ -72,7 +72,7 @@ void RenderModule::Init(int width, int height, const char* title) {
     ctx.vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 }
 
-void RenderModule::SetImGuiCallback(std::function<void()> callback) {
+void RenderModule::AddImGuiCallback(std::function<void()> callback) {
     ctx.imguiCallback = callback;
 }
 
