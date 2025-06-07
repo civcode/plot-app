@@ -1,4 +1,5 @@
 #include "render_module/zoom_view.hpp"
+#include <cmath>
 #include <unordered_map>
 #include <sstream>
 #include <iomanip>
@@ -207,6 +208,8 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
             float zoomFactor = 1.3f;
             float prevZoom = state.zoom;
             float newZoom = (wheel > 0) ? state.zoom * zoomFactor : state.zoom / zoomFactor;
+            newZoom = std::max(0.27f, newZoom); // Prevent zooming out too much
+            // newZoom = std::max(0.09f, newZoom); // Prevent zooming out too much
 
             ImVec2 mouse = ImGui::GetIO().MousePos;
             ImVec2 canvasTopLeft = ImGui::GetCursorScreenPos();
@@ -226,8 +229,8 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
             state.zoom = newZoom;
 
             // Compute offset so that the content under the cursor stays fixed
-            state.offset.x = mouseX - contentPosBefore.x * state.zoom;
-            state.offset.y = mouseY - contentPosBefore.y * state.zoom;
+            state.offset.x = std::floor(mouseX - contentPosBefore.x * state.zoom);
+            state.offset.y = std::floor(mouseY - contentPosBefore.y * state.zoom);
 
             printf("CanvasPos: (%.1f, %.1f)\n", canvasPos.x, canvasPos.y);
             printf("CanvasSize: (%.1f, %.1f)\n", canvasSize.x, canvasSize.y);
@@ -237,33 +240,34 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
     }
 
     if (hovering && active && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
-        state.offset.x += delta.x;
-        state.offset.y -= delta.y; // Flip Y for NanoVG
+        state.offset.x += std::floor(delta.x);
+        state.offset.y -= std::floor(delta.y); // Flip Y for NanoVG
         printf("Dragging Offset: (%.1f, %.1f)\n", state.offset.x, state.offset.y);
     }
 
     // Apply transforms and draw
     // nvg::SetContext(vg);
     nvgSave(vg);
-    nvgTranslate(vg, state.offset.x, state.offset.y);
+    nvgTranslate(vg, std::floor(state.offset.x), std::floor(state.offset.y));
     nvgScale(vg, state.zoom, state.zoom);
     drawCallback(vg);
 
     // Write zoom and offset info to the canvas with ImGui
     nvgScale(vg, 1/state.zoom, -1/state.zoom);
     nvgFontSize(vg, 14.0f);
-    float x0 = -state.offset.x; 
-    float y0 = state.offset.y - canvasSize.y; 
+    float x0 = std::floor(-state.offset.x); 
+    float y0 = std::floor(state.offset.y - canvasSize.y); 
+    // printf("Drawing text at: (%.1f, %.1f)\n", x0, y0);
     // nvgText(vg, x0+5, y0+20, ("Zoom: " + std::to_string(state.zoom)).c_str(), nullptr);
     // nvgText(vg, x0+5, y0+40, ("Offset: (" + std::to_string(state.offset.x) + ", " + std::to_string(state.offset.y) + ")").c_str(), nullptr);
     std::ostringstream oss;
     oss << std::setprecision(2) << std::fixed << "Zoom: " << state.zoom; 
     nvgFillColor(vg, nvgRGBA(255, 255, 255, 200)); // Semi-transparent background
-    nvgText(vg, x0+5, y0+20, oss.str().c_str(), nullptr);
+    nvgText(vg, x0+3, y0+15, oss.str().c_str(), nullptr);
     oss.str("");
     oss << "" << std::setprecision(0) << std::fixed
         << "Offset: (" << state.offset.x << ", " << state.offset.y << ")";
-    nvgText(vg, x0+5, y0+40, oss.str().c_str(), nullptr);
+    nvgText(vg, x0+3, y0+30, oss.str().c_str(), nullptr);
 
     nvgRestore(vg);
 

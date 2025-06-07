@@ -1,6 +1,7 @@
 #include "render_module/render_module.hpp"
 
 #include <math.h>
+#include <iostream>
 // #include <imgui.h>
 // #include <implot.h>
 // #include "nanovg.h"
@@ -75,7 +76,8 @@ int main() {
         nvg::Fill();
 
         nvg::BeginPath();
-        nvg::Text(10, 100, "Hello, NanoVG!");
+        nvg::Text(10, 100, "bHello, NanoVG!");
+        nvg::Text(10, 50, "aHello, NanoVG!");
         nvg::ClosePath();
         nvg::ClosePath();
     });
@@ -143,6 +145,12 @@ int main() {
             nvg::ClosePath();
 
             nvg::BeginPath();
+            nvg::Rect(0, 220, 5, 5);
+            nvg::FillColor(nvg::RGBA(255, 255, 255, 200)); // Semi-transparent background
+            nvg::Fill();
+            nvg::ClosePath();
+
+            nvg::BeginPath();
             nvg::Text(0, 180, "Hello, NanoVG!");
             nvg::ClosePath();
             // nvgBeginPath(vg);
@@ -160,6 +168,34 @@ int main() {
     });
 
 
+    RenderModule::RegisterNanoVGCallback("Zoomable Random Dots", [](NVGcontext* vg) {
+        ZoomView::Draw("Zoomable random dot View", vg, [](NVGcontext* vg) {
+            nvg::SetContext(vg);
+            nvg::BeginPath();
+            nvg::Rect(0, 0, 200, 200);
+            nvg::FillColor(nvg::RGBA(0, 0, 255, 255));
+            nvg::Fill();
+            nvg::ClosePath();
+
+            struct Point {
+                float x, y;
+            };
+            static std::vector<Point> points;
+            for (int i = 0; i < 100; ++i) {
+                float x = rand() % 200;
+                float y = rand() % 200;
+                points.push_back({x, y});
+            }
+            for (const auto& p : points) {
+                nvg::BeginPath();
+                nvg::Circle(p.x, p.y, 1);
+                nvg::FillColor(nvg::RGBA(255, 0, 0, 255));
+                nvg::Fill();
+                nvg::ClosePath();
+            }
+            std::cout << points.size() << std::endl;
+        });
+    });
     
     RenderModule::Run();
     RenderModule::Shutdown();
