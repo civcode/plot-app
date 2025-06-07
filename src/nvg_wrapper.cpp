@@ -53,7 +53,12 @@ void StrokePaint(NVGpaint paint) { nvgStrokePaint(g_ctx, paint); }
 void FontSize(float size) { nvgFontSize(g_ctx, size); }
 void FontFace(const char* name) { nvgFontFace(g_ctx, name); }
 void TextAlign(int align) { nvgTextAlign(g_ctx, align); }
-void Text(float x, float y, const char* text) { nvgText(g_ctx, x, y, text, nullptr); }
+void Text(float x, float y, const char* text) { 
+    nvgSave(g_ctx);
+    nvgScale(g_ctx, 1.0f, -1.0f); // Flip Y for NanoVG
+    nvgText(g_ctx, x, -y, text, nullptr); 
+    nvgRestore(g_ctx);
+}
 void TextBox(float x, float y, float breakWidth, const char* text) {
     nvgTextBox(g_ctx, x, y, breakWidth, text, nullptr);
 }

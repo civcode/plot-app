@@ -1,5 +1,7 @@
 #include "render_module/zoom_view.hpp"
 #include <unordered_map>
+#include <sstream>
+#include <iomanip>
 
 namespace ZoomView {
 
@@ -213,6 +215,7 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
             // Get mouse position inside the canvas (flipping Y for NanoVG's origin)
             float mouseX = mouse.x - canvasTopLeft.x;
             float mouseY = canvasSize.y - (mouse.y - canvasTopLeft.y);  // <- Y flip
+            // float mouseY = mouse.y - canvasTopLeft.y;  // <- Y flip
 
             // Convert to unscaled content coordinates
             ImVec2 contentPosBefore = ImVec2(
@@ -239,21 +242,28 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
         printf("Dragging Offset: (%.1f, %.1f)\n", state.offset.x, state.offset.y);
     }
 
-
-
-    // ImGui::SetCursorScreenPos(canvasPos);
-    // ImGui::Text("Zoom: %.2f", state.zoom);
-    // ImGui::Text("Offset: (%.1f, %.1f)", state.offset.x, state.offset.y);
-
     // Apply transforms and draw
+    // nvg::SetContext(vg);
     nvgSave(vg);
     nvgTranslate(vg, state.offset.x, state.offset.y);
     nvgScale(vg, state.zoom, state.zoom);
     drawCallback(vg);
+
     // Write zoom and offset info to the canvas with ImGui
-    nvgScale(vg, state.zoom, -state.zoom);
-    nvgText(vg, 0, 20, ("Zoom: " + std::to_string(state.zoom)).c_str(), nullptr);
-    nvgText(vg, 0, 40, ("Offset: (" + std::to_string(state.offset.x) + ", " + std::to_string(state.offset.y) + ")").c_str(), nullptr);
+    nvgScale(vg, 1/state.zoom, -1/state.zoom);
+    nvgFontSize(vg, 14.0f);
+    float x0 = -state.offset.x; 
+    float y0 = state.offset.y - canvasSize.y; 
+    // nvgText(vg, x0+5, y0+20, ("Zoom: " + std::to_string(state.zoom)).c_str(), nullptr);
+    // nvgText(vg, x0+5, y0+40, ("Offset: (" + std::to_string(state.offset.x) + ", " + std::to_string(state.offset.y) + ")").c_str(), nullptr);
+    std::ostringstream oss;
+    oss << std::setprecision(2) << std::fixed << "Zoom: " << state.zoom; 
+    nvgFillColor(vg, nvgRGBA(255, 255, 255, 200)); // Semi-transparent background
+    nvgText(vg, x0+5, y0+20, oss.str().c_str(), nullptr);
+    oss.str("");
+    oss << "" << std::setprecision(0) << std::fixed
+        << "Offset: (" << state.offset.x << ", " << state.offset.y << ")";
+    nvgText(vg, x0+5, y0+40, oss.str().c_str(), nullptr);
 
     nvgRestore(vg);
 

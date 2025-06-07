@@ -67,10 +67,17 @@ int main() {
         nvg::Circle(x, 100, 40);
         nvg::FillColor(nvgRGBA(255, 100, 0, 255));
         nvg::Fill();
-        // nvgBeginPath(vg);
-        // nvgCircle(vg, x, 100, 40);
-        // nvgFillColor(vg, nvgRGBA(255, 100, 0, 255));
-        // nvgFill(vg);
+        nvg::ClosePath();
+
+        nvg::BeginPath();
+        nvg::Circle(x, 200, 20);
+        nvg::FillColor(nvgRGBA(0, 255, 0, 255));
+        nvg::Fill();
+
+        nvg::BeginPath();
+        nvg::Text(10, 100, "Hello, NanoVG!");
+        nvg::ClosePath();
+        nvg::ClosePath();
     });
 
 
@@ -136,7 +143,7 @@ int main() {
             nvg::ClosePath();
 
             nvg::BeginPath();
-            nvg::Text(0, 250, "Hello, NanoVG!");
+            nvg::Text(0, 180, "Hello, NanoVG!");
             nvg::ClosePath();
             // nvgBeginPath(vg);
             // nvgCircle(vg, 100, 100, 40);
