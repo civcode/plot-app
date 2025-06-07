@@ -44,6 +44,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nanovg)
 
+FetchContent_Declare(
+    roboto_font
+    GIT_REPOSITORY https://github.com/googlefonts/roboto-2.git 
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(roboto_font)
+
+message(STATUS "Using Roboto font from: ${roboto_font_SOURCE_DIR}")
+
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${glad_SOURCE_DIR}/include
@@ -69,3 +78,21 @@ target_link_libraries(RenderModuleDemo
 )
 
 target_compile_definitions(RenderModuleDemo PRIVATE NANOVG_GL3_IMPLEMENTATION)
+
+
+# Copy assets to the build directory
+# Find all PNG files in this directory (recursively if needed)
+file(GLOB_RECURSE ROBOTO_FILES
+     "${roboto_font_SOURCE_DIR}/*.ttf"
+)
+
+foreach(ROBOTO_FILE IN LISTS ROBOTO_FILES)
+    get_filename_component(FONT_NAME "${ROBOTO_FILE}" NAME)
+    
+    add_custom_command(TARGET RenderModuleDemo POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${ROBOTO_FILE}"
+                "$<TARGET_FILE_DIR:RenderModuleDemo>/fonts/${FONT_NAME}"
+        COMMENT "Copying ${FONT_NAME} to output directory"
+    )
+endforeach()

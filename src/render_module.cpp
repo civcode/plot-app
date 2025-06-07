@@ -70,13 +70,21 @@ void RenderModule::Init(int width, int height, const char* title) {
     ImGui_ImplOpenGL3_Init("#version 330");
 
     ctx.vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+    if (!ctx.vg) {
+        fprintf(stderr, "Could not init NanoVG.\n");
+        return;
+    }
+    int ret = nvgCreateFont(ctx.vg, "sans", "fonts/Roboto-Regular.ttf");
+    if (ret == -1) {
+        fprintf(stderr, "Could not load font.\n");
+    }
 }
 
-void RenderModule::AddImGuiCallback(std::function<void()> callback) {
+void RenderModule::RegisterImGuiCallback(std::function<void()> callback) {
     ctx.imguiCallback = callback;
 }
 
-void RenderModule::AddPaintWindow(const std::string& name, std::function<void(NVGcontext*)> callback) {
+void RenderModule::RegisterNanoVGCallback(const std::string& name, std::function<void(NVGcontext*)> callback) {
     ctx.paintWindows.push_back(PaintWindow{name, callback});
 }
 

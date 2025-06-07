@@ -226,6 +226,9 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
             state.offset.x = mouseX - contentPosBefore.x * state.zoom;
             state.offset.y = mouseY - contentPosBefore.y * state.zoom;
 
+            printf("CanvasPos: (%.1f, %.1f)\n", canvasPos.x, canvasPos.y);
+            printf("CanvasSize: (%.1f, %.1f)\n", canvasSize.x, canvasSize.y);
+            // printf("CanvasTopLeft: (%.1f, %.1f)\n", canvasTopLeft.x, canvasTopLeft.y);
             printf("Zoom: %.2f, Offset: (%.1f, %.1f)\n", state.zoom, state.offset.x, state.offset.y);
         }
     }
@@ -236,6 +239,8 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
         printf("Dragging Offset: (%.1f, %.1f)\n", state.offset.x, state.offset.y);
     }
 
+
+
     // ImGui::SetCursorScreenPos(canvasPos);
     // ImGui::Text("Zoom: %.2f", state.zoom);
     // ImGui::Text("Offset: (%.1f, %.1f)", state.offset.x, state.offset.y);
@@ -245,6 +250,11 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
     nvgTranslate(vg, state.offset.x, state.offset.y);
     nvgScale(vg, state.zoom, state.zoom);
     drawCallback(vg);
+    // Write zoom and offset info to the canvas with ImGui
+    nvgScale(vg, state.zoom, -state.zoom);
+    nvgText(vg, 0, 20, ("Zoom: " + std::to_string(state.zoom)).c_str(), nullptr);
+    nvgText(vg, 0, 40, ("Offset: (" + std::to_string(state.offset.x) + ", " + std::to_string(state.offset.y) + ")").c_str(), nullptr);
+
     nvgRestore(vg);
 
     // ImGui::EndChild(); // End canvas child

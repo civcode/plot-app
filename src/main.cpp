@@ -31,7 +31,7 @@ int main() {
     RenderModule::Init(980, 720);
 
     // Combined ImGui callback that creates multiple windows
-    RenderModule::AddImGuiCallback([]() {
+    RenderModule::RegisterImGuiCallback([]() {
         // First window: Sine plot
         ImGui::Begin("Sine Plot");
         if (ImPlot::BeginPlot("Sine Wave")) {
@@ -57,7 +57,7 @@ int main() {
     });
 
     // Paint window: animated NanoVG circle
-    RenderModule::AddPaintWindow("NanoVG Canvas", [](NVGcontext* vg) {
+    RenderModule::RegisterNanoVGCallback("NanoVG Canvas", [](NVGcontext* vg) {
         static float x = 0.0f;
         x += g_speed;
         if (x > 300.0f) x = 0.0f;
@@ -78,11 +78,11 @@ int main() {
     static PaintState paint;
 
         // Register the paint window using state
-    RenderModule::AddPaintWindow("NanoVG Canvas 2", [](NVGcontext* vg) {
+    RenderModule::RegisterNanoVGCallback("NanoVG Canvas 2", [](NVGcontext* vg) {
         paint.draw(vg);
     });
     
-    RenderModule::AddPaintWindow("NanoVG Canvas 3", [](NVGcontext* vg) {
+    RenderModule::RegisterNanoVGCallback("NanoVG Canvas 3", [](NVGcontext* vg) {
         ZoomView::Draw("Zoomable NanoVG Canvas", vg, [](NVGcontext* vg) {
 
             nvg::SetContext(vg);
@@ -97,7 +97,7 @@ int main() {
                 nvg::SetShapeAntiAlias(true);
                 nvg::Circle(x, y, 3);
                 nvg::StrokeColor(nvg::RGBA(255, 0, 0, 255));
-                nvgStrokeWidth(vg, 0.5);
+                nvg::StrokeWidth(0.5);
                 nvg::Stroke();
                 // nvg::FillColor(nvgRGBA(0, 255, 0, 255));
                 // nvg::Fill();
@@ -114,16 +114,38 @@ int main() {
         });    
     });
         
-    RenderModule::AddPaintWindow("Zoomable NanoVG", [](NVGcontext* vg) {
+    RenderModule::RegisterNanoVGCallback("Zoomable NanoVG", [](NVGcontext* vg) {
         ZoomView::Draw("Zoomable View", vg, [](NVGcontext* vg) {
-            nvgBeginPath(vg);
-            nvgCircle(vg, 100, 100, 40);
-            nvgFillColor(vg, nvgRGB(255, 100, 100));
-            nvgFill(vg);
+            nvg::SetContext(vg);
+            nvg::BeginPath();
+            nvg::Rect(0, 0, 200, 200);
+            nvg::FillColor(nvg::RGBA(0, 0, 255, 255));
+            nvg::Fill();
+            nvg::ClosePath();
+
+            nvg::BeginPath();
+            nvg::MoveTo(0, 0);
+            nvg::LineTo(200, 0);
+            nvg::LineTo(200, 200);
+            nvg::LineTo(0, 0);
+            nvg::StrokeColor(nvg::RGBA(255, 255, 0, 255));
+            nvg::StrokeWidth(2.0f);
+            nvg::Stroke();
+            nvg::FillColor(nvg::RGBA(255, 0, 0, 255));
+            nvg::Fill();
+            nvg::ClosePath();
+
+            nvg::BeginPath();
+            nvg::Text(0, 250, "Hello, NanoVG!");
+            nvg::ClosePath();
+            // nvgBeginPath(vg);
+            // nvgCircle(vg, 100, 100, 40);
+            // nvgFillColor(vg, nvgRGB(255, 100, 100));
+            // nvgFill(vg);
         });
     });
 
-    RenderModule::AddPaintWindow("Debug", [](NVGcontext* vg) {
+    RenderModule::RegisterNanoVGCallback("Debug", [](NVGcontext* vg) {
         nvgBeginPath(vg);
         nvgRect(vg, 0, 0, 200, 200);
         nvgFillColor(vg, nvgRGB(0, 255, 0));
@@ -131,6 +153,7 @@ int main() {
     });
 
 
+    
     RenderModule::Run();
     RenderModule::Shutdown();
     return 0;
