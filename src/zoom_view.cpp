@@ -254,19 +254,16 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
 
     // Write zoom and offset info to the canvas with ImGui
     nvgScale(vg, 1/state.zoom, -1/state.zoom);
+    nvgFontFace(vg, "mono");
     nvgFontSize(vg, 14.0f);
     float x0 = std::floor(-state.offset.x); 
     float y0 = std::floor(state.offset.y - canvasSize.y); 
-    // printf("Drawing text at: (%.1f, %.1f)\n", x0, y0);
-    // nvgText(vg, x0+5, y0+20, ("Zoom: " + std::to_string(state.zoom)).c_str(), nullptr);
-    // nvgText(vg, x0+5, y0+40, ("Offset: (" + std::to_string(state.offset.x) + ", " + std::to_string(state.offset.y) + ")").c_str(), nullptr);
     std::ostringstream oss;
-    oss << std::setprecision(2) << std::fixed << "Zoom: " << state.zoom; 
+    oss << std::setprecision(2) << std::fixed << "Scale " << state.zoom; 
     nvgFillColor(vg, nvgRGBA(255, 255, 255, 200)); // Semi-transparent background
     nvgText(vg, x0+3, y0+15, oss.str().c_str(), nullptr);
     oss.str("");
-    oss << "" << std::setprecision(0) << std::fixed
-        << "Offset: (" << state.offset.x << ", " << state.offset.y << ")";
+    oss << std::setprecision(0) << std::fixed << "Position (" << state.offset.x << ", " << state.offset.y << ")";
     nvgText(vg, x0+3, y0+30, oss.str().c_str(), nullptr);
 
     nvgRestore(vg);

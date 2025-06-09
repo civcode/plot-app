@@ -11,8 +11,8 @@ add_compile_options(-fmax-errors=3)
 # Assume GLFW is installed on the system
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
-include_directories(${GLFW_INCLUDE_DIRS})
-link_libraries(${GLFW_LIBRARIES})
+# include_directories(${GLFW_INCLUDE_DIRS})
+# link_libraries(${GLFW_LIBRARIES})
 
 include(FetchContent)
 
@@ -62,7 +62,7 @@ FetchContent_MakeAvailable(roboto_mono_font)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
-    # ${GLFW_INCLUDE_DIRS}
+    ${GLFW_INCLUDE_DIRS}
     ${glad_SOURCE_DIR}/include
     ${imgui_SOURCE_DIR}
     ${implot_SOURCE_DIR}
@@ -206,12 +206,15 @@ target_include_directories(RenderModule PUBLIC
     PRIVATE ${nanovg_SOURCE_DIR}/src
 )
 target_sources(RenderModule PRIVATE ${SRC_FILES})
+target_link_libraries(RenderModule PUBLIC
+    ${GLFW_LIBRARIES}
+)
 # target_link_libraries(RenderModule PUBLIC glad)
 # target_link_libraries(RenderModule PRIVATE glad)
 
 target_compile_definitions(RenderModule 
     PUBLIC NANOVG_GL3_IMPLEMENTATION 
-    PRIVATE RENDERMODULE_INTERNAL_BUILD
+    # PRIVATE RENDERMODULE_INTERNAL_BUILD
 )
 
 # === Install the library ===
