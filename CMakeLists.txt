@@ -8,10 +8,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Release)
 add_compile_options(-fmax-errors=3)
 
+
+# === Find dependencies ===
 # Assume GLFW is installed on the system
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
-
+# === ===
 
 
 # === Fetch dependencies using FetchContent ===
@@ -67,8 +69,19 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(roboto_mono_font)
+# === ===
 
 
+
+# === Add dummy target to Generate glad sources ===
+add_custom_target(PrepareGlad ALL
+    DEPENDS glad
+)
+# === ===
+
+
+
+# === RenderModule libraruy ===
 file(GLOB SRC_FILES
     ${CMAKE_SOURCE_DIR}/src/render_module.cpp
     ${CMAKE_SOURCE_DIR}/src/nvg_wrapper.cpp
@@ -80,86 +93,13 @@ file(GLOB SRC_FILES
     ${nanovg_SOURCE_DIR}/src/nanovg.c
 )
 
-
-
-
-
-# Copy assets to the build directory
-file(GLOB_RECURSE ROBOTO_TTF_FILES
-     "${roboto_font_SOURCE_DIR}/*.ttf"
-     "${roboto_mono_font_SOURCE_DIR}/*.ttf"
-)
-
-
-
-
-
-
-configure_file(${nanovg_SOURCE_DIR}/src/nanovg.h
-    ${CMAKE_CURRENT_BINARY_DIR}/render_module/nanovg.h COPYONLY
-)
-
-set(IMGUI_HEADERS
-    ${imgui_SOURCE_DIR}/imgui.h
-    ${imgui_SOURCE_DIR}/imconfig.h
-    ${imgui_SOURCE_DIR}/imgui_internal.h
-)
-foreach(header IN LISTS IMGUI_HEADERS)
-    get_filename_component(filename "${header}" NAME)
-    configure_file(${header} ${CMAKE_CURRENT_BINARY_DIR}/render_module/imgui/${filename} COPYONLY)
-endforeach()
-
-
-set(IMPLOT_HEADERS
-    ${implot_SOURCE_DIR}/implot.h
-    ${implot_SOURCE_DIR}/implot_internal.h
-)
-foreach(header IN LISTS IMPLOT_HEADERS)
-    get_filename_component(filename "${header}" NAME)
-    configure_file(${header} ${CMAKE_CURRENT_BINARY_DIR}/render_module/${filename} COPYONLY)
-endforeach()
-
-set(NANOVG_HEADERS
-    ${nanovg_SOURCE_DIR}/src/nanovg.h
-)
-foreach(header IN LISTS NANOVG_HEADERS)
-    get_filename_component(filename "${header}" NAME)
-    configure_file(${header} ${CMAKE_CURRENT_BINARY_DIR}/render_module/${filename} COPYONLY)
-endforeach()
-
-# set(GLAD_HEADERS
-#     ${glad_BINARY_DIR}/include/glad/glad.h
-#     ${glad_BINARY_DIR}/include/KHR/khrplatform.h
-# )
-# foreach(header IN LISTS GLAD_HEADERS)
-#     get_filename_component(filename "${header}" NAME)
-#     configure_file(${header} ${CMAKE_CURRENT_BINARY_DIR}/render_module/${filename} COPYONLY)
-# endforeach()
-
-
-
-
-
-
-
-
-
-
-# === Add dummy target to Generate glad ===
-add_custom_target(PrepareGlad ALL
-    DEPENDS glad
-    # COMMAND ${CMAKE_COMMAND} -E copy ${glad_SOURCE_DIR}/generated/src/glad.c ${CMAKE_CURRENT_BINARY_DIR}/glad.c
-    # BYPRODUCTS ${glad_BINARY_DIR}/src/glad.c
-)
-
-
-
-
-
 # === Create the library ===
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+
 add_library(RenderModule src/render_module.cpp)
+# Add dependency on glad to ensure it is built before RenderModule
 add_dependencies(RenderModule PrepareGlad)
+
 target_include_directories(RenderModule 
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
@@ -173,56 +113,70 @@ target_include_directories(RenderModule
 )
 target_sources(RenderModule PRIVATE ${SRC_FILES})
 target_link_libraries(RenderModule PRIVATE ${GLFW_LIBRARIES} glad)
-
 target_compile_definitions(RenderModule 
     PUBLIC NANOVG_GL3_IMPLEMENTATION 
     # PRIVATE RENDERMODULE_INTERNAL_BUILD
 )
 
+
+
 # === Install the library ===
 include(GNUInstallDirs)
 # set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")
+
 install(TARGETS RenderModule
     EXPORT RenderModuleTargets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    # CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 )
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-# === Copy Library Headers ===
-#  Copy ImGui headers into the install tree under 'include/imgui'
-install(FILES ${IMGUI_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/
+
+
+# === Install public Library Headers ===
+set(IMGUI_HEADERS
+    ${imgui_SOURCE_DIR}/imgui.h
+    ${imgui_SOURCE_DIR}/imconfig.h
+    ${imgui_SOURCE_DIR}/imgui_internal.h
+)
+set(IMPLOT_HEADERS
+    ${implot_SOURCE_DIR}/implot.h
+    ${implot_SOURCE_DIR}/implot_internal.h
+)
+set(NANOVG_HEADERS
+    ${nanovg_SOURCE_DIR}/src/nanovg.h
+)
+install(
+    FILES 
+        ${IMGUI_HEADERS} 
+        ${IMPLOT_HEADERS}
+        ${NANOVG_HEADERS}
+    DESTINATION 
+        ${CMAKE_INSTALL_INCLUDEDIR}/
 )
 
-install(FILES ${IMPLOT_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/
+
+
+# Install the roboto fonts to ~/.local/share/render-module/fonts/roboto
+file(GLOB_RECURSE ROBOTO_TTF_FILES
+     "${roboto_font_SOURCE_DIR}/*.ttf"
+     "${roboto_mono_font_SOURCE_DIR}/*.ttf"
+)
+
+install(
+    FILES 
+        ${ROBOTO_TTF_FILES} 
+    DESTINATION 
+        "$ENV{HOME}/.local/share/render-module/fonts/roboto"
 )
 
 
-install(FILES ${NANOVG_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/
-)
 
-
-# install(DIRECTORY ${imgui_SOURCE_DIR}/
-#     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/imgui
-#     FILES_MATCHING PATTERN "*.h"
-# )
-
-# Install the fonts to ~/.local/share/render-module/fonts
-install(FILES ${ROBOTO_TTF_FILES} DESTINATION "$ENV{HOME}/.local/share/render-module/fonts/roboto")
-
-
-
-
-
-# === Create the config files ===
+# === Create the cmake config files ===
 install(EXPORT RenderModuleTargets
     FILE RenderModuleTargets.cmake
     NAMESPACE RenderModule::
@@ -241,13 +195,12 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/RenderModuleConfig.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RenderModule
 )
-
-
+# === ===
 
 
 
 # === Add an example executable ===
-add_executable(RenderModuleDemo examples/example.cpp)
+add_executable(RenderModuleDemo examples/render_module_demo.cpp)
 target_include_directories(RenderModuleDemo PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${GLFW_INCLUDE_DIRS}
@@ -257,3 +210,4 @@ target_include_directories(RenderModuleDemo PRIVATE
     ${nanovg_SOURCE_DIR}/src
 )
 target_link_libraries(RenderModuleDemo PRIVATE RenderModule)
+# === ===
