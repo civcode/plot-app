@@ -192,8 +192,8 @@ add_custom_target(PrepareGlad ALL
 # === Create the library ===
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 # add_library(RenderModule src/render_module.cpp)
-add_library(RenderModule src/render_module.cpp ${glad_BINARY_DIR}/src/glad.c)
-# add_library(RenderModule src/render_module.cpp)
+# add_library(RenderModule src/render_module.cpp ${glad_BINARY_DIR}/src/glad.c)
+add_library(RenderModule src/render_module.cpp)
 add_dependencies(RenderModule PrepareGlad)
 target_include_directories(RenderModule PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
@@ -203,11 +203,14 @@ target_include_directories(RenderModule PUBLIC
     # $<BUILD_INTERFACE:${glad_BINARY_DIR}/include>
     PRIVATE ${glad_BINARY_DIR}/include
     PRIVATE ${imgui_SOURCE_DIR}
+    # PRIVATE ${implot_SOURCE_DIR}
     PRIVATE ${nanovg_SOURCE_DIR}/src
 )
 target_sources(RenderModule PRIVATE ${SRC_FILES})
-target_link_libraries(RenderModule PUBLIC
-    ${GLFW_LIBRARIES}
+# target_sources(RenderModule PRIVATE ${SRC_FILES} ${glad_BINARY_DIR}/src/glad.c)
+target_link_libraries(RenderModule
+    PRIVATE ${GLFW_LIBRARIES}
+    PRIVATE glad
 )
 # target_link_libraries(RenderModule PUBLIC glad)
 # target_link_libraries(RenderModule PRIVATE glad)

@@ -263,7 +263,7 @@ void Draw(const std::string& label, NVGcontext* vg, std::function<void(NVGcontex
     nvgFillColor(vg, nvgRGBA(255, 255, 255, 200)); // Semi-transparent background
     nvgText(vg, x0+3, y0+15, oss.str().c_str(), nullptr);
     oss.str("");
-    oss << std::setprecision(0) << std::fixed << "Position (" << state.offset.x << ", " << state.offset.y << ")";
+    oss << std::setprecision(0) << std::fixed << "Offset (" << state.offset.x << ", " << state.offset.y << ")";
     nvgText(vg, x0+3, y0+30, oss.str().c_str(), nullptr);
 
     nvgRestore(vg);

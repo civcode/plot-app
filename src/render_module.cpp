@@ -46,11 +46,11 @@ static void CreateFBO(PaintWindow& win, int width, int height) {
     win.height = height;
 }
 
-static void CreateFonts(NVGcontext* vg) {
+static void LoadFonts(NVGcontext* vg) {
     const char* home = std::getenv("HOME");
     if (!home) {
         std::fprintf(stderr, "Error: HOME environment variable is not set.\n");
-        exit(EXIT_FAILURE); 
+        // exit(EXIT_FAILURE); 
     }
 
     std::string base_path = std::string(home) + "/.local/share/render-module/";
@@ -78,11 +78,6 @@ static void CreateFonts(NVGcontext* vg) {
             printf("Loaded font '%s' from '%s'.\n", alias.c_str(), full_path.c_str());
         }
     }
-
-    // int font = nvgCreateFont(vg, "sans", "fonts/Roboto-Regular.ttf");
-    // if (font == -1) {
-    //     fprintf(stderr, "Could not load font.\n");
-    // }
 }
 
 void RenderModule::Init(int width, int height, const char* title) {
@@ -116,7 +111,7 @@ void RenderModule::Init(int width, int height, const char* title) {
         fprintf(stderr, "Could not init NanoVG.\n");
         return;
     }
-    CreateFonts(ctx.vg);
+    LoadFonts(ctx.vg);
 }
 
 void RenderModule::RegisterImGuiCallback(std::function<void()> callback) {

@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <implot.h>
+#include <implot_internal.h>
 #include "nanovg.h"
 
 #include "render_module/nvg_wrapper.hpp"
