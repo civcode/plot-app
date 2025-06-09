@@ -6,8 +6,10 @@
 #include <string>
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <implot.h>
 #include "nanovg.h"
+
 #include "render_module/nvg_wrapper.hpp"
 #include "render_module/zoom_view.hpp"
 

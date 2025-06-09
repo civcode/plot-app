@@ -46,6 +46,45 @@ static void CreateFBO(PaintWindow& win, int width, int height) {
     win.height = height;
 }
 
+static void CreateFonts(NVGcontext* vg) {
+    const char* home = std::getenv("HOME");
+    if (!home) {
+        std::fprintf(stderr, "Error: HOME environment variable is not set.\n");
+        exit(EXIT_FAILURE); 
+    }
+
+    std::string base_path = std::string(home) + "/.local/share/render-module/";
+
+    std::vector<std::pair<std::string, std::string>> fonts = {
+        {"sans", "fonts/roboto/Roboto-Regular.ttf"},
+        {"sans-bold", "fonts/roboto/Roboto-Bold.ttf"},
+        {"sans-italic", "fonts/roboto/Roboto-Italic.ttf"},
+        {"sans-bold-italic", "fonts/roboto/Roboto-BoldItalic.ttf"},
+        {"mono", "fonts/roboto/RobotoMono-Regular.ttf"},
+        {"mono-bold", "fonts/roboto/RobotoMono-Bold.ttf"},
+        {"mono-italic", "fonts/roboto/RobotoMono-Italic.ttf"},
+        {"mono-bold-italic", "fonts/roboto/RobotoMono-BoldItalic.ttf"}
+    };
+
+    for (const auto& font : fonts) {
+        std::string alias = font.first;
+        std::string full_path = base_path + font.second;
+
+        int font_id = nvgCreateFont(vg, alias.c_str(), full_path.c_str());
+        if (font_id == -1) {
+            fprintf(stderr, "Could not load font '%s' from '%s'.\n", alias.c_str(), full_path.c_str());
+            continue;
+        } else {
+            printf("Loaded font '%s' from '%s'.\n", alias.c_str(), full_path.c_str());
+        }
+    }
+
+    // int font = nvgCreateFont(vg, "sans", "fonts/Roboto-Regular.ttf");
+    // if (font == -1) {
+    //     fprintf(stderr, "Could not load font.\n");
+    // }
+}
+
 void RenderModule::Init(int width, int height, const char* title) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -64,6 +103,9 @@ void RenderModule::Init(int width, int height, const char* title) {
     ImVec4 bg = ImVec4(0.95f, 0.95f, 0.98f, 1.0f);
     style.Colors[ImGuiCol_WindowBg] = bg;
 
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; 
+
     ImPlot::CreateContext();
     ImGui::StyleColorsLight();
     ImGui_ImplGlfw_InitForOpenGL(ctx.window, true);
@@ -74,10 +116,7 @@ void RenderModule::Init(int width, int height, const char* title) {
         fprintf(stderr, "Could not init NanoVG.\n");
         return;
     }
-    int ret = nvgCreateFont(ctx.vg, "sans", "fonts/Roboto-Regular.ttf");
-    if (ret == -1) {
-        fprintf(stderr, "Could not load font.\n");
-    }
+    CreateFonts(ctx.vg);
 }
 
 void RenderModule::RegisterImGuiCallback(std::function<void()> callback) {
