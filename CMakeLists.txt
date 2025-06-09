@@ -18,7 +18,7 @@ include(FetchContent)
 
 # Fetch glad
 include(cmake/glad.cmake)
-# install(TARGETS glad EXPORT RenderModuleTargets)
+set_target_properties(glad PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Fetch ImGui
 FetchContent_Declare(
@@ -59,15 +59,6 @@ FetchContent_Declare(
     GIT_TAG v3.001
 )
 FetchContent_MakeAvailable(roboto_mono_font)
-
-include_directories(
-    # ${CMAKE_SOURCE_DIR}/include
-    # ${GLFW_INCLUDE_DIRS}
-    # ${glad_SOURCE_DIR}/include
-    # ${imgui_SOURCE_DIR}
-    # ${implot_SOURCE_DIR}
-    # ${nanovg_SOURCE_DIR}/src
-)
 
 file(GLOB SRC_FILES
     ${CMAKE_SOURCE_DIR}/src/render_module.cpp
@@ -201,6 +192,7 @@ target_include_directories(RenderModule PUBLIC
     # $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/render_module>
     $<INSTALL_INTERFACE:include>
     # $<BUILD_INTERFACE:${glad_BINARY_DIR}/include>
+    PRIVATE ${GLFW_INCLUDE_DIRS} 
     PRIVATE ${glad_BINARY_DIR}/include
     PRIVATE ${imgui_SOURCE_DIR}
     PRIVATE ${implot_SOURCE_DIR}
@@ -286,3 +278,15 @@ install(FILES
 
 
 
+
+# === Add an example executable ===
+add_executable(RenderModuleDemo examples/example.cpp)
+target_include_directories(RenderModuleDemo PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${GLFW_INCLUDE_DIRS}
+    ${glad_SOURCE_DIR}/include
+    ${imgui_SOURCE_DIR}
+    ${implot_SOURCE_DIR}
+    ${nanovg_SOURCE_DIR}/src
+)
+target_link_libraries(RenderModuleDemo PRIVATE RenderModule)
