@@ -61,12 +61,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(roboto_mono_font)
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/include
+    # ${CMAKE_SOURCE_DIR}/include
     ${GLFW_INCLUDE_DIRS}
-    ${glad_SOURCE_DIR}/include
-    ${imgui_SOURCE_DIR}
+    # ${glad_SOURCE_DIR}/include
+    # ${imgui_SOURCE_DIR}
     ${implot_SOURCE_DIR}
-    ${nanovg_SOURCE_DIR}/src
+    # ${nanovg_SOURCE_DIR}/src
 )
 
 file(GLOB SRC_FILES
